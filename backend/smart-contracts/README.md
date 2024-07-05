@@ -1,10 +1,25 @@
-# Advanced Sample Hardhat Project
+# NebulaID Smart Contracts
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
+We'll use **Solidity** to write the smart contracts for managing digital identities on the **Ethereum blockchain**. The main features we need are:
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
+### Main Features
 
-Try running some of the following tasks:
+1. **Identity Registration**: Allow users to register their digital identity.
+2. **Identity Verification**: Verifiers can attest to the validity of a user’s identity.
+3. **Zero-Knowledge Proofs (ZKP) Integration**: Optional support for advanced privacy-preserving features.
+4. **Cross-Chain Compatibility**: To facilitate future integrations with other EVM-compatible blockchains.
+
+### Features Developed
+
+- **Identity Registration**: Users register their digital identity linked to an IPFS hash.
+- **Identity Verification**: An `onlyOwner` function that allows specific entities to verify an identity. This can be adjusted to use a decentralized or multi-sig approach.
+- **IPFS Integration**: To store encrypted identity data.
+
+### Pending Development Tasks
+
+- Revocation feature development
+- Identity Recovery feature integration
+- Zero-Knowledge Proofs verification to verify user identity and other details
 
 ```shell
 npx hardhat accounts
@@ -32,13 +47,13 @@ To try out Etherscan verification, you first need to deploy a contract to an Eth
 In this project, copy the .env.example file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
 
 ```shell
-hardhat run --network ropsten scripts/deploy.ts
+hardhat run --network sepolia scripts/deploy.ts
 ```
 
 Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
 
 ```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
+npx hardhat verify --network sepolia DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
 ```
 
 # Performance optimizations
