@@ -1,88 +1,64 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract InvoiceNFT is ERC721 {
-    uint256 public tokenIdCounter;
-    mapping(uint256 => Invoice) public invoices;
+contract NebulaID is Ownable {
+    using Counters for Counters.Counter;
+    Counters.Counter private _identityIds;
 
-    struct Invoice {
-        uint256 billAmount;
-        string token;
-        uint256 createdAt;
-        uint256 dueDate;
-        string uniqueId;
-        string buyer;
-        string seller;
-        address payer;
-        address payee;
-        string status;
+    struct Identity {
+        uint256 id;
+        address user;
+        string ipfsHash;  // Link to encrypted identity data on IPFS
+        bool verified;
+        address[] verifiers;
     }
 
-    event InvoiceMinted(
-        uint256 tokenId,
-        uint256 billAmount,
-        string token,
-        uint256 createdAt,
-        uint256 dueDate,
-        string uniqueId,
-        string buyer,
-        string seller,
-        address payer,
-        address payee,
-        string status
-    );
+    mapping(uint256 => Identity) public identities;
+    mapping(address => uint256) public userToIdentity;
 
-    // Modifier to restrict function call to a specific address
-    modifier onlyToAddress(address to) {
-        require(msg.sender == to, "Caller is not the authorized address");
-        _;
-    }
+    event IdentityCreated(uint256 id, address indexed user, string ipfsHash);
+    event IdentityVerified(uint256 id, address indexed verifier);
 
-    constructor() ERC721("InvoiceNFT", "INFT") {}
+    function registerIdentity(string memory ipfsHash) external {
+        require(userToIdentity[msg.sender] == 0, "Identity already registered.");
 
-    function mintInvoice(
-        address to,
-        uint256 billAmount,
-        string memory token,
-        uint256 dueDate,
-        string memory uniqueId,
-        string memory buyer,
-        string memory seller,
-        address payer,
-        address payee,
-        string memory status
-    ) public onlyToAddress(to) {
-        uint256 tokenId = tokenIdCounter;
-        _mint(to, tokenId);
-        tokenIdCounter++;
+        _identityIds.increment();
+        uint256 newId = _identityIds.current();
 
-        invoices[tokenId] = Invoice({
-            billAmount: billAmount,
-            token: token,
-            createdAt: block.timestamp,
-            dueDate: dueDate,
-            uniqueId: uniqueId,
-            buyer: buyer,
-            seller: seller,
-            payer: payer,
-            payee: payee,
-            status: status
+        identities[newId] = Identity({
+            id: newId,
+            user: msg.sender,
+            ipfsHash: ipfsHash,
+            verified: false,
+            verifiers: new address 
         });
 
-        emit InvoiceMinted(
-            tokenId,
-            billAmount,
-            token,
-            block.timestamp,
-            dueDate,
-            uniqueId,
-            buyer,
-            seller,
-            payer,
-            payee,
-            status
-        );
+        userToIdentity[msg.sender] = newId;
+
+        emit IdentityCreated(newId, msg.sender, ipfsHash);
+    }
+
+    function verifyIdentity(uint256 identityId) external onlyOwner {
+        require(identityId > 0 && identityId <= _identityIds.current(), "Invalid identity ID.");
+        Identity storage identity = identities[identityId];
+
+        require(identity.user != address(0), "Identity does not exist.");
+        require(!identity.verified, "Identity already verified.");
+
+        identity.verified = true;
+        identity.verifiers.push(msg.sender);
+
+        emit IdentityVerified(identityId, msg.sender);
+    }
+
+    function getIdentity(uint256 identityId) external view returns (Identity memory) {
+        return identities[identityId];
+    }
+
+    function isIdentityVerified(uint256 identityId) external view returns (bool) {
+        return identities[identityId].verified;
     }
 }
