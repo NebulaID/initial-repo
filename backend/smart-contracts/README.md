@@ -21,6 +21,8 @@ We'll use **Solidity** to write the smart contracts for managing digital identit
 - Identity Recovery feature integration
 - Zero-Knowledge Proofs verification to verify user identity and other details
 
+# Running the Project
+
 ```shell
 npx hardhat accounts
 npx hardhat compile
