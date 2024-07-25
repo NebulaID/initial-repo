@@ -1,6 +1,6 @@
 # NebulaID Smart Contracts
 
-We'll use **Solidity** to write the smart contracts for managing digital identities on the **Ethereum blockchain**. The main features we need are:
+We'll use **Solidity** to write the smart contracts for managing digital identities on the **Ethereum blockchain**. The main features we aim to implement are identity registration and verification, with optional support for zero-knowledge proofs (ZKP) and cross-chain compatibility.:
 
 ### Main Features
 
@@ -13,7 +13,7 @@ We'll use **Solidity** to write the smart contracts for managing digital identit
 
 - **Identity Registration**: Users register their digital identity linked to an IPFS hash.
 - **Identity Verification**: An `onlyOwner` function that allows specific entities to verify an identity. This can be adjusted to use a decentralized or multi-sig approach.
-- **IPFS Integration**: To store encrypted identity data.
+- **IPFS Integration**: To store encrypted identity data.  
 
 ### Pending Development Tasks
 
